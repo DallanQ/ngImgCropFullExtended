@@ -5,7 +5,7 @@
  * Copyright (c) 2015 undefined
  * License: MIT
  *
- * Generated at Saturday, December 19th, 2015, 1:28:36 AM
+ * Generated at Saturday, December 19th, 2015, 2:33:19 AM
  */
 (function() {
 var crop = angular.module('ngImgCrop', []);
@@ -2783,7 +2783,11 @@ crop.directive('imgCrop', ['$timeout', 'cropHost', 'cropPubSub', function($timeo
                 if(newVal) {
                     displayLoading();
                 }
-                $timeout(function() {
+                if (!!scope.timeout) {
+                    $timeout.cancel(scope.timeout);
+                }
+                scope.timeout = $timeout(function() {
+                    scope.timeout = null;
                     cropHost.setNewImageSource(scope.image);
                 }, 100);
             });
