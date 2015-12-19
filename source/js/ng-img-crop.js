@@ -126,7 +126,11 @@ crop.directive('imgCrop', ['$timeout', 'cropHost', 'cropPubSub', function($timeo
                 if(newVal) {
                     displayLoading();
                 }
-                $timeout(function() {
+                if (!!scope.timeout) {
+                    $timeout.cancel(scope.timeout);
+                }
+                scope.timeout = $timeout(function() {
+                    scope.timeout = null;
                     cropHost.setNewImageSource(scope.image);
                 }, 100);
             });
