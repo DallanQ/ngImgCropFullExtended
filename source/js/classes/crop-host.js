@@ -114,8 +114,11 @@ crop.factory('cropHost', ['$document', '$q', 'cropAreaCircle', 'cropAreaSquare',
                 }
 
                 theArea.setSize({
+                    // DWQ
                     w: cw,
                     h: ch
+                    //w: Math.min(200, cw / 2),
+                    //h: Math.min(200, ch / 2)
                 });
                 //TODO: set top left corner point
                 theArea.setCenterPoint({
@@ -450,10 +453,13 @@ crop.factory('cropHost', ['$document', '$q', 'cropAreaCircle', 'cropAreaSquare',
                     w: theArea.getSize().w * ratioMin,
                     h: theArea.getSize().h * ratioMin
                 });
-                var center = theArea.getCenterPoint();
+                //var center = theArea.getCenterPoint();
                 theArea.setCenterPoint({
-                    x: center.x * ratioNewCurWidth,
-                    y: center.y * ratioNewCurHeight
+                    // DWQ
+                    x: ctx.canvas.width / 2,
+                    y: ctx.canvas.height / 2
+                    //x: center.x * ratioNewCurWidth,
+                    //y: center.y * ratioNewCurHeight
                 });
 
             } else {
