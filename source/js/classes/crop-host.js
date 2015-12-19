@@ -114,8 +114,8 @@ crop.factory('cropHost', ['$document', '$q', 'cropAreaCircle', 'cropAreaSquare',
                 }
 
                 theArea.setSize({
-                    w: Math.min(200, cw / 2),
-                    h: Math.min(200, ch / 2)
+                    w: cw,
+                    h: ch
                 });
                 //TODO: set top left corner point
                 theArea.setCenterPoint({

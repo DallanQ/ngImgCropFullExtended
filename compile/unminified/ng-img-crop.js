@@ -1,11 +1,11 @@
 /*!
- * ngImgCropExtendedDrmc v0.4.7
- * https://github.com/drmikecrowe/ngImgCropExtended/
+ * ngImgCropExtended v0.4.7
+ * https://github.com/CrackerakiUA/ngImgCropExtended/
  *
  * Copyright (c) 2015 undefined
  * License: MIT
  *
- * Generated at Tuesday, December 15th, 2015, 3:39:53 PM
+ * Generated at Friday, December 18th, 2015, 9:00:42 PM
  */
 (function() {
 var crop = angular.module('ngImgCrop', []);
@@ -2074,8 +2074,8 @@ crop.factory('cropHost', ['$document', '$q', 'cropAreaCircle', 'cropAreaSquare',
                 }
 
                 theArea.setSize({
-                    w: Math.min(200, cw / 2),
-                    h: Math.min(200, ch / 2)
+                    w: cw,
+                    h: ch
                 });
                 //TODO: set top left corner point
                 theArea.setCenterPoint({
