@@ -12,6 +12,10 @@ crop.factory('cropArea', ['cropCanvas', function(CropCanvas) {
             h: 80
         };
 
+        this._initSize = undefined;
+        this._initCoords = undefined;
+        this._allowCropResizeOnCorners = false;
+
         this._forceAspectRatio = false;
         this._aspect = null;
 
@@ -28,6 +32,9 @@ crop.factory('cropArea', ['cropCanvas', function(CropCanvas) {
 
     /* GETTERS/SETTERS */
 
+    CropArea.prototype.setAllowCropResizeOnCorners = function(bool) {
+        this._allowCropResizeOnCorners=bool;
+    };
     CropArea.prototype.getImage = function() {
         return this._image;
     };
@@ -41,7 +48,18 @@ crop.factory('cropArea', ['cropCanvas', function(CropCanvas) {
 
     CropArea.prototype.setAspect = function(aspect) {
         this._aspect=aspect;
-    }
+    };
+
+    CropArea.prototype.getAspect = function() {
+        return this._aspect;
+    };
+
+    CropArea.prototype.getCanvasSize = function() {
+        return {
+          w: this._ctx.canvas.width,
+          h: this._ctx.canvas.height
+        };
+    };
 
     CropArea.prototype.getSize = function() {
         return this._size;
@@ -50,6 +68,49 @@ crop.factory('cropArea', ['cropCanvas', function(CropCanvas) {
     CropArea.prototype.setSize = function(size) {
         size = this._processSize(size);
         this._size = this._preventBoundaryCollision(size);
+    };
+
+    CropArea.prototype.setSizeOnMove = function(size) {
+        size = this._processSize(size);
+        if(this._allowCropResizeOnCorners) this._size = this._preventBoundaryCollision(size);
+        else this._size = this._allowMouseOutsideCanvas(size);
+    };
+
+    CropArea.prototype.CircleOnMove = function(northWestCorner, southEastCorner) {
+        var size = {
+            x: northWestCorner.x,
+            y: northWestCorner.y,
+            w: southEastCorner.x - northWestCorner.x,
+            h: southEastCorner.y - northWestCorner.y
+        };
+        var canvasH = this._ctx.canvas.height,
+            canvasW = this._ctx.canvas.width;
+        if(size.w>canvasW||size.h>canvasH){
+            if(canvasW<canvasH){
+                size.w=canvasW;
+                size.h=canvasW;
+            }else{
+                size.w=canvasH;
+                size.h=canvasH;
+            }
+        }
+        if(size.x+size.w>canvasW){
+            size.x=canvasW-size.w;
+        }
+        if(size.y+size.h>canvasH){
+            size.y=canvasH-size.h;
+        }
+        if(size.x<0) size.x=0;
+        if(size.y<0) size.y=0;
+        if(this._minSize.w>size.w){
+            size.w=this._minSize.w;
+            size.x=this._size.x;
+        }
+        if(this._minSize.h>size.h){
+            size.h=this._minSize.h;
+            size.y=this._size.y;
+        }
+        this._size=size;
     };
 
     CropArea.prototype.setSizeByCorners = function(northWestCorner, southEastCorner) {
@@ -65,6 +126,11 @@ crop.factory('cropArea', ['cropCanvas', function(CropCanvas) {
 
     CropArea.prototype.getSouthEastBound = function() {
         return this._southEastBound(this.getSize());
+    };
+
+    CropArea.prototype.setMinSize = function(size) {
+        this._minSize = this._processSize(size);
+        this.setSize(this._minSize);
     };
 
     CropArea.prototype.getMinSize = function() {
@@ -88,19 +154,61 @@ crop.factory('cropArea', ['cropCanvas', function(CropCanvas) {
             h: s.h
         });
     };
+    
+    CropArea.prototype.setCenterPointOnMove = function(point) {
+        var s = this.getSize();
+        this.setSizeOnMove({
+            x: point.x - s.w / 2,
+            y: point.y - s.h / 2,
+            w: s.w,
+            h: s.h
+        });
+    };
 
-    CropArea.prototype.setMinSize = function(size) {
-        this._minSize = this._processSize(size);
-        this.setSize(this._minSize);
+    CropArea.prototype.setInitSize = function(size) {
+        this._initSize = this._processSize(size);
+        this.setSize(this._initSize);
+    };
+
+    CropArea.prototype.getInitSize = function() {
+        return this._initSize;
+    };
+
+    CropArea.prototype.setInitCoords = function(coords) {
+        //add h/w-data to coords-object
+        coords.h = this.getSize().h;
+        coords.w = this.getSize().w;
+        this._initCoords = this._processSize(coords);
+        this.setSize(this._initCoords);
+    };
+
+    CropArea.prototype.getInitCoords = function() {
+        return this._initCoords;
     };
 
     // return a type string
     CropArea.prototype.getType = function() {
         //default to circle
         return 'circle';
-    }
+    };
 
     /* FUNCTIONS */
+    CropArea.prototype._allowMouseOutsideCanvas = function(size) {
+        var canvasH = this._ctx.canvas.height,
+            canvasW = this._ctx.canvas.width;
+        var newSize = {
+            w: size.w,
+            h: size.h,
+        };
+        if(size.x<0) newSize.x=0;
+        else if(size.x+size.w>canvasW) newSize.x=canvasW-size.w;
+        else newSize.x=size.x;
+        if(size.y<0) newSize.y=0;
+        else if(size.y+size.h>canvasH) newSize.y=canvasH-size.h;
+        else newSize.y=size.y;
+        return newSize;
+    };
+
     CropArea.prototype._preventBoundaryCollision = function(size) {
         var canvasH = this._ctx.canvas.height,
             canvasW = this._ctx.canvas.width;
@@ -247,19 +355,20 @@ crop.factory('cropArea', ['cropCanvas', function(CropCanvas) {
         var width = size.w;
         if(this._aspect) width = size.h * this._aspect;
         return {
-            x: size.x || this._minSize.x,
-            y: size.y || this._minSize.y,
+            x: (typeof size.x === "undefined") ? this.getSize().x : size.x,
+            y: (typeof size.y === "undefined") ? this.getSize().y : size.y,
             w: width || this._minSize.w,
             h: size.h || this._minSize.h
         };
-    }
+    };
 
     CropArea.prototype._southEastBound = function(size) {
         return {
             x: size.x + size.w,
             y: size.y + size.h
         };
-    }
+    };
+
     CropArea.prototype.draw = function() {
         // draw crop area
         this._cropCanvas.drawCropArea(this._image, this.getCenterPoint(), this._size, this._drawArea);
