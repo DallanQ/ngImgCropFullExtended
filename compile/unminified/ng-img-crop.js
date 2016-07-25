@@ -5,7 +5,7 @@
  * Copyright (c) 2016 undefined
  * License: MIT
  *
- * Generated at Monday, July 25th, 2016, 11:07:18 AM
+ * Generated at Monday, July 25th, 2016, 2:50:22 PM
  */
 (function() {
 var crop = angular.module('ngImgCrop', []);
@@ -3179,6 +3179,7 @@ crop.directive('imgCrop', ['$timeout', 'cropHost', 'cropPubSub', function ($time
                 if (newVal) {
                     displayLoading();
                 }
+		// DWQ cancel timeout if necessary
                 if (!!scope.timeout) {
                     $timeout.cancel(scope.timeout);
                 }
@@ -4038,7 +4039,8 @@ crop.directive('imgCrop', ['$timeout', 'cropHost', 'cropPubSub', function ($time
     /**
      * Export class to global
      */
-    if (typeof define === 'function' && define.amd) {
+    // DWQ: I seem to have gotten a broken global define from jspdf
+    if (false && typeof define === 'function' && define.amd) {
         define([], function() {
             return ColorThief;
         }); // for AMD loader
@@ -5109,7 +5111,8 @@ crop.directive('imgCrop', ['$timeout', 'cropHost', 'cropPubSub', function ($time
   /**
    * Export class to global
    */
-  if (typeof define === 'function' && define.amd) {
+  // DWQ: I seem to have gotten a broken global define from jspdf
+  if (false && typeof define === 'function' && define.amd) {
     define([], function() { return MegaPixImage; }); // for AMD loader
   } else if (typeof exports === 'object') {
     module.exports = MegaPixImage; // for CommonJS
@@ -5118,6 +5121,7 @@ crop.directive('imgCrop', ['$timeout', 'cropHost', 'cropPubSub', function ($time
   }
 
 })();
+
 
 /*!
  * Color Thief v2.0
@@ -5757,7 +5761,8 @@ crop.directive('imgCrop', ['$timeout', 'cropHost', 'cropPubSub', function ($time
     /**
      * Export class to global
      */
-    if (typeof define === 'function' && define.amd) {
+    // DWQ: I seem to have gotten a broken global define from jspdf
+    if (false && typeof define === 'function' && define.amd) {
         define([], function() {
             return ColorThief;
         }); // for AMD loader

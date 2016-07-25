@@ -252,7 +252,8 @@
   /**
    * Export class to global
    */
-  if (typeof define === 'function' && define.amd) {
+  // DWQ: I seem to have gotten a broken global define from jspdf
+  if (false && typeof define === 'function' && define.amd) {
     define([], function() { return MegaPixImage; }); // for AMD loader
   } else if (typeof exports === 'object') {
     module.exports = MegaPixImage; // for CommonJS

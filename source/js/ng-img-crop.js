@@ -192,6 +192,7 @@ crop.directive('imgCrop', ['$timeout', 'cropHost', 'cropPubSub', function ($time
                 if (newVal) {
                     displayLoading();
                 }
+		// DWQ cancel timeout if necessary
                 if (!!scope.timeout) {
                     $timeout.cancel(scope.timeout);
                 }
